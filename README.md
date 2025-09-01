@@ -31,7 +31,7 @@ Dibuat oleh Alexander Johan Pramudito dan Muhammad Fajrulfalaq Izzulfirdausyah S
    WA_SESSION_NAME=nama_session
    ```
 
-##▶️ Menjalankan Bot
+## ▶️ Menjalankan Bot
 
 1. Start bot:
    ```bash
