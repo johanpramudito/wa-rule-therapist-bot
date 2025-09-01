@@ -18,18 +18,18 @@ Dibuat oleh Alexander Johan Pramudito dan Muhammad Fajrulfalaq Izzulfirdausyah S
 ## ⚙️ Instalasi
 
 1. **Clone repo**
-   ````bash
+   ```bash
    git clone https://github.com/johanpramudito/wa-rule-therapist-bot.git
-   cd wa-rule-therapist-bot```
-   ````
+   cd wa-rule-therapist-bot
+   ```
 2. **Install dependency**
-   ````bash
-   npm install```
-   ````
+   ```bash
+   npm install
+   ```
 3. **Buat file .env**
-   ````bash
-   WA_SESSION_NAME=nama_session```
-   ````
+   ```bash
+   WA_SESSION_NAME=nama_session
+   ```
 
 ##▶️ Menjalankan Bot
 
