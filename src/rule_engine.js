@@ -20,6 +20,10 @@ const REFLECTIONS = new Map([
   ["dirimu", "diriku"],
   ["aku merasa", "kamu merasa"],
   ["saya merasa", "kamu merasa"],
+  ["dariku", "darimu"],
+  ["darimu", "dariku"],
+  ["denganku", "denganmu"],
+  ["denganmu", "denganku"],
 ]);
 
 function reflect(text) {
@@ -95,7 +99,7 @@ const RULES = [
       `Aku mengerti. Jadi karena ${reflect(m[1])}, apa artinya itu buatmu?`,
   },
   {
-    pattern: /\bsiapa kamu\b/i,
+    pattern: /(?=.*\bsiapa\b)(?=.*\bkamu\b)/i,
     reply: () =>
       "Aku hanyalah chatbot pendengar, bukan terapis sungguhan, tapi aku akan berusaha memahami ceritamu.",
   },
@@ -134,7 +138,7 @@ const RULES = [
       ]),
   },
   {
-    pattern: /\b(kenapa|mengapa) (.+)/i,
+    pattern: /\b(kenapa|mengapa) (.+?)\s*\??$/i,
     reply: (m) =>
       `Pertanyaan bagus. Menurutmu sendiri, kenapa ${reflect(m[2])}?`,
   },
@@ -165,4 +169,4 @@ function respond(input, ctx = {}) {
   return choose(FALLBACKS);
 }
 
-module.exports = { respond, reflect, RULES };
+module.exports = { respond, reflect, RULES, FALLBACKS };
