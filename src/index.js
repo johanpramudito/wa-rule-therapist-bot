@@ -16,6 +16,7 @@ dotenv.config();
 const sessionName = process.env.WA_SESSION_NAME || "therapist-bot-session";
 const LOG_LEVEL = (process.env.LOG_LEVEL || "info").toLowerCase();
 const logFile = path.join(__dirname, "..", "logs", "bot.log");
+const userContexts = new Map();
 
 // simple logger
 function log(level, msg) {
@@ -86,13 +87,24 @@ function reconnectClient() {
     try {
       const text = (message.body || "").trim();
       if (!text) return;
-      const reply = respond(text, { from: message.from });
-      await message.reply(reply);
-      log("info", `From ${message.from}: "${text}" -> "${reply}"`);
+      
+      const userId = message.from;
+
+      let currentUserContext = userContexts.get(userId) || {};
+
+      const result = respond(text, currentUserContext);
+      
+      const replyText = result.response;
+
+      await message.reply(replyText);
+      log("info", `From ${userId}: "${text}" -> "${replyText}"`);
+
+      userContexts.set(userId, result.ctx);
+
     } catch (err) {
       log("error", `Handler error: ${err?.stack || err}`);
       try {
-        await message.reply("Sorry, I ran into an issue processing that.");
+        await message.reply("Maaf, terjadi kesalahan saat memproses pesanmu.");
       } catch {}
     }
   });

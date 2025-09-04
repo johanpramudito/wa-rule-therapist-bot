@@ -7,10 +7,17 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
+let context = {};
+
 function ask() {
   rl.question("> ", (line) => {
-    const out = respond(line);
-    console.log(out);
+    const result = respond(line, context);
+
+    const replyText = result.response;
+    console.log(replyText);
+
+    context = result.ctx;
+
     ask();
   });
 }
