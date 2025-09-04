@@ -98,6 +98,50 @@ const RULES = [
         "Tentu saja. Kapan pun kamu merasa perlu bicara, aku siap mendengarkan.",
       ]),
   },
+    {
+    pattern: /\b(stres|capek|lelah|tertekan)\b/i,
+    reply: (m, input, ctx) => {
+        ctx.lastQuestion = "awaiting_trigger"; // Set penanda
+        return choose([
+            "Kedengarannya melelahkan. apa yang paling bikin kamu merasa lelah?",
+            "Capek itu wajar, tubuh dan hati butuh istirahat. Apa kamu sudah coba rehat sejenak?",
+        ]);
+    }
+  },
+  {
+    pattern: /\b(sedih|kecewa|hampa|murung)\b/i,
+    reply: (m, input, ctx) => {
+      ctx.lastQuestion = "awaiting_support_person"; // Set penanda
+      return choose([
+        "Aku bisa merasakan kesedihanmu lewat kata-katamu. Aku di sini untuk membantumu, kira kira apa yang bisa membuatmu merasa lebih baik?",
+        "Perasaan sedih kadang sulit diungkapkan. Aku di sini untuk mendukungmu, coba pikirkan apa yang bisa dilakukan untuk memperbaiki mood?",
+      ]);
+    }
+  },
+  {
+    pattern: /\b(marah|kesal|jengkel|frustrasi)\b/i,
+    reply: () =>
+      choose([
+        "Aku paham kamu sedang marah. Tapi coba deh tarik napas dalam-dalam dulu.",
+        "Rasa marah itu wajar, tapi bisa melelahkan. Jadi coba untuk menenangkan diri dulu, ya",
+        "Kesal banget ya rasanya. Apa yang menurutmu bisa bikin lebih lega?",
+      ]),
+  },
+  {
+    pattern: /\b(bahagia|lega|gembira|puas)\b/i,
+    reply: () =>
+      choose([
+        "Bahagia itu berharga. Apa yang paling kamu syukuri saat ini?",
+        "Wah, itu kabar baik! Apa yang ingin kamu rayakan dari perasaan ini?",
+      ]),
+  },
+  {
+    pattern: /\b(senang)\b/i,
+    reply: () =>
+      choose([
+        "Ikut senang dengarnya! Semangat terus yaa",
+      ]),
+  },
   {
     pattern: /\b(aku|saya) butuh (.+)/i,
     reply: (m) => `Kenapa menurutmu kamu butuh ${reflect(m[2])}?`,
@@ -133,44 +177,6 @@ const RULES = [
     pattern: /(?=.*\bsiapa\b)(?=.*\bkamu\b)/i,
     reply: () =>
       "Aku hanyalah chatbot pendengar, bukan terapis sungguhan, tapi aku akan berusaha memahami ceritamu.",
-  },
-  {
-    pattern: /\b(stres|capek|lelah|tertekan)\b/i,
-    reply: (m, input, ctx) => {
-        ctx.lastQuestion = "awaiting_trigger"; // Set penanda
-        return choose([
-            "Kedengarannya melelahkan. apa yang paling bikin kamu merasa lelah?",
-            "Capek itu wajar, tubuh dan hati butuh istirahat. Apa kamu sudah coba rehat sejenak?",
-        ]);
-    }
-  },
-  {
-    pattern: /\b(sedih|kecewa|hampa|murung)\b/i,
-    reply: (m, input, ctx) => {
-      ctx.lastQuestion = "awaiting_support_person"; // Set penanda
-      return choose([
-        "Aku bisa merasakan kesedihanmu lewat kata-katamu. Aku di sini untuk membantumu, kira kira apa yang bisa membuatmu merasa lebih baik?",
-        "Perasaan sedih kadang sulit diungkapkan. Aku di sini untuk mendukungmu, coba pikirkan apa yang bisa dilakukan untuk memperbaiki mood?",
-      ]);
-    }
-  },
-  {
-    pattern: /\b(marah|kesal|jengkel|frustrasi)\b/i,
-    reply: () =>
-      choose([
-        "Aku paham kamu sedang marah. Tapi coba deh tarik napas dalam-dalam dulu.",
-        "Rasa marah itu wajar, tapi bisa melelahkan. Jadi coba untuk menenangkan diri dulu, ya",
-        "Kesal banget ya rasanya. Apa yang menurutmu bisa bikin lebih lega?",
-      ]),
-  },
-  {
-    pattern: /\b(senang|bahagia|lega|gembira|puas)\b/i,
-    reply: () =>
-      choose([
-        "Ikut senang dengarnya! Semangat terus yaa",
-        "Bahagia itu berharga. Apa yang paling kamu syukuri saat ini?",
-        "Wah, itu kabar baik! Apa yang ingin kamu rayakan dari perasaan ini?",
-      ]),
   },
   {
     pattern: /\b(kenapa|mengapa) (.+?)\s*\??$/i,
