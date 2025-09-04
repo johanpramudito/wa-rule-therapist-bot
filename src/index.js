@@ -10,7 +10,6 @@ const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
 const { respond } = require("./rule_engine.js");
-const puppeteer = require("puppeteer");
 
 dotenv.config();
 
@@ -18,6 +17,7 @@ const sessionName = process.env.WA_SESSION_NAME || "therapist-bot-session";
 const LOG_LEVEL = (process.env.LOG_LEVEL || "info").toLowerCase();
 const logFile = path.join(__dirname, "..", "logs", "bot.log");
 
+// simple logger
 function log(level, msg) {
   const ts = new Date().toISOString();
   const line = `[${ts}] [${level}] ${msg}`;
@@ -31,38 +31,40 @@ function log(level, msg) {
   fs.appendFileSync(logFile, line + "\n");
 }
 
-function clearSession() {
-  const sessionPath = path.join(__dirname, "..", ".wwebjs_auth", sessionName);
-  if (fs.existsSync(sessionPath)) {
-    fs.rmSync(sessionPath, { recursive: true, force: true });
-    log("info", "🗑️ Session folder cleared.");
-  }
-}
-
+// declare client at top (will be reassigned)
 let client;
 
 function reconnectClient() {
   if (client) {
     try {
       client.destroy();
-    } catch {}
-    client = null;
+    } catch (e) {
+      log("warn", "Error while destroying old client: " + e.message);
+    }
   }
 
   log("info", "🚀 Initializing WhatsApp client...");
 
   client = new Client({
     authStrategy: new LocalAuth({ clientId: sessionName }),
-    puppeteer: {
-      headless: true,
-      executablePath: puppeteer.executablePath(), // pakai Chromium yang diunduh puppeteer
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    },
+    // Remove puppeteer configuration completely
   });
-
   client.on("qr", (qr) => {
     qrcode.generate(qr, { small: true });
     log("info", "📷 QR generated. Scan with WhatsApp.");
+  });
+
+  // Add these new event listeners for debugging
+  client.on("authenticated", () => {
+    log("info", "🔐 Authentication successful!");
+  });
+
+  client.on("loading_screen", (percent, message) => {
+    log("info", `⏳ Loading: ${percent}% - ${message}`);
+  });
+
+  client.on("change_state", (state) => {
+    log("info", `🔄 State changed to: ${state}`);
   });
 
   client.on("ready", () => {
@@ -71,14 +73,13 @@ function reconnectClient() {
 
   client.on("auth_failure", (m) => {
     log("error", `Auth failure: ${m}`);
-    clearSession();
-    reconnectClient();
+    log("warn", "💡 Coba jalankan: npm run reset-session");
+    setTimeout(reconnectClient, 5000);
   });
 
-  client.on("disconnected", (reason) => {
-    log("warn", `⚠️ Disconnected: ${reason}`);
-    clearSession();
-    reconnectClient();
+  client.on("disconnected", (r) => {
+    log("warn", `Disconnected: ${r}`);
+    setTimeout(reconnectClient, 5000);
   });
 
   client.on("message", async (message) => {
@@ -99,5 +100,5 @@ function reconnectClient() {
   client.initialize();
 }
 
-// Start pertama kali
+// start first client
 reconnectClient();

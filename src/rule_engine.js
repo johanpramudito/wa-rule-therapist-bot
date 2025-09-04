@@ -6,22 +6,20 @@
 
 // Pronoun reflection map
 const REFLECTIONS = new Map([
-  ["i", "you"],
-  ["me", "you"],
-  ["my", "your"],
-  ["mine", "yours"],
-  ["am", "are"],
-  ["myself", "yourself"],
-  ["you", "I"],
-  ["your", "my"],
-  ["yours", "mine"],
-  ["yourself", "myself"],
-  ["i'm", "you're"],
-  ["i’ve", "you’ve"],
-  ["i'd", "you'd"],
-  ["i'll", "you'll"],
-  ["we", "you"],
-  ["our", "your"],
+  ["saya", "kamu"],
+  ["aku", "kamu"],
+  ["gue", "lu"],
+  ["gua", "lu"],
+  ["kamu", "saya"],
+  ["anda", "saya"],
+  ["lu", "gue"],
+  ["lo", "gue"],
+  ["punyaku", "punyamu"],
+  ["punyamu", "punyaku"],
+  ["diriku", "dirimu"],
+  ["dirimu", "diriku"],
+  ["aku merasa", "kamu merasa"],
+  ["saya merasa", "kamu merasa"],
 ]);
 
 function reflect(text) {
@@ -48,105 +46,114 @@ function choose(arr) {
 }
 
 const FALLBACKS = [
-  "I hear you. Can you tell me more about that?",
-  "That sounds important. What do you feel is the hardest part right now?",
-  "I'm listening. When did you start feeling this way?",
-  "Thanks for sharing that. What would help, even a little, in this moment?",
+  "Hmm, boleh ceritakan lebih dalam lagi?",
+  "Aku mendengarkanmu. Apa yang menurutmu paling berat saat ini?",
+  "Terima kasih sudah berbagi. Bagian mana yang paling mengganggumu?",
+  "Aku ingin memahami lebih baik. Bisa kamu ceritakan lebih detail?",
 ];
 
-// Rule table
+// Aturan dalam Bahasa Indonesia & English
 const RULES = [
   {
-    pattern: /\b(?:hello|hi|hey|halo|hai)\b/i,
+    pattern: /\b(hai|halo|ass?alamualaikum|selamat (pagi|siang|malam))\b/i,
     reply: () =>
       choose([
-        "Hi there 👋 How are you feeling today?",
-        "Hello. What's on your mind right now?",
-        "Hey, I'm here to listen. How are you doing?",
+        "Halo, apa kabar hatimu hari ini?",
+        "Hai 👋 bagaimana perasaanmu saat ini?",
+        "Waalaikumussalam, aku senang bisa mendengarmu. Apa yang sedang kamu rasakan?",
       ]),
   },
   {
-    pattern: /\bi need (.+)/i,
-    reply: (m) => `Why do you feel you need ${reflect(m[1])}?`,
+    pattern: /\b(aku|saya) butuh (.+)/i,
+    reply: (m) => `Kenapa menurutmu kamu butuh ${reflect(m[2])}?`,
   },
   {
-    pattern: /\bi feel (.+)/i,
+    pattern: /\b(aku|saya) merasa (.+)/i,
     reply: (m) =>
       choose([
-        `It makes sense to feel ${reflect(
-          m[1]
-        )}. What do you think is driving that feeling?`,
-        `Feeling ${reflect(
-          m[1]
-        )} can be heavy. What happened recently that might relate to this?`,
+        `Wajar kalau kamu merasa ${reflect(
+          m[2]
+        )}. Apa yang biasanya memicu perasaan itu?`,
+        `Perasaan ${reflect(
+          m[2]
+        )} memang berat. Apa yang kamu lakukan biasanya ketika begini?`,
       ]),
   },
   {
-    pattern: /\b(?:i am|i'm)\s+(.+)/i,
+    pattern: /\b(aku|saya|gue) sedang (.+)/i,
     reply: (m) =>
       choose([
-        `Thanks for sharing that you're ${reflect(
-          m[1]
-        )}. What do you need right now?`,
-        `Being ${reflect(
-          m[1]
-        )} can be tough. What tends to help when you feel this way?`,
+        `Terima kasih sudah jujur, kamu sedang ${reflect(
+          m[2]
+        )}. Apa yang bisa sedikit membantu sekarang?`,
+        `Sedang ${reflect(m[2])} ya... bagaimana biasanya kamu menghadapinya?`,
       ]),
   },
   {
-    pattern: /\bbecause (.+)/i,
+    pattern: /\bkarena (.+)/i,
     reply: (m) =>
-      `That reason matters. If ${reflect(m[1])}, what does that mean for you?`,
+      `Aku mengerti. Jadi karena ${reflect(m[1])}, apa artinya itu buatmu?`,
   },
   {
-    pattern: /\b(?:who are you|what are you|are you (?:a )?therapist)\b/i,
+    pattern: /\bsiapa kamu\b/i,
     reply: () =>
-      "I'm a supportive chatbot—not a licensed therapist—but I'm here to listen and reflect with you.",
+      "Aku hanyalah chatbot pendengar, bukan terapis sungguhan, tapi aku akan berusaha memahami ceritamu.",
   },
   {
-    pattern: /\b(stress(ed)?|anxious|anxiety|cemas|gelisah)\b/i,
+    pattern: /\b(stres|capek|lelah|tertekan)\b/i,
     reply: () =>
       choose([
-        "Anxiety can feel overwhelming. Would a brief breathing exercise help right now?",
-        "Feeling stressed is understandable. What's the biggest source of pressure at the moment?",
+        "Kedengarannya melelahkan. Apa yang paling bikin kamu merasa tertekan?",
+        "Capek itu wajar, tubuh dan hati butuh istirahat. Apa kamu sudah coba rehat sejenak?",
       ]),
   },
   {
-    pattern: /\b(sad|sedih|down|depress(ed)?|murung)\b/i,
+    pattern: /\b(sedih|kecewa|hampa|murung)\b/i,
     reply: () =>
       choose([
-        "I'm sorry you're feeling low. What support has helped you before in times like this?",
-        "That sounds really heavy. If it's okay, what led up to these feelings?",
+        "Aku bisa merasakan kesedihanmu lewat kata-katamu. Apa yang membuatmu merasa seperti itu?",
+        "Perasaan sedih kadang sulit diungkapkan. Menurutmu, siapa yang bisa mengerti perasaanmu saat ini?",
       ]),
   },
   {
-    pattern: /\b(angry|marah|kesal|frustrated)\b/i,
+    pattern: /\b(marah|kesal|jengkel|frustrasi)\b/i,
     reply: () =>
       choose([
-        "It sounds frustrating. What triggered the anger?",
-        "Those feelings are valid. What outcome would feel fair to you?",
+        "Aku paham kamu sedang marah. Apa yang paling bikin kamu tersulut?",
+        "Rasa marah itu wajar, tapi bisa melelahkan. Bagaimana biasanya kamu meredakannya?",
+        "Kesal banget ya rasanya. Apa yang menurutmu bisa bikin lebih lega?",
       ]),
   },
   {
-    pattern: /\bwhy (?:do|did|am|are|is|would|should)\b(.+)/i,
-    reply: (m) => `That's a thoughtful question. What do you think—why${m[1]}?`,
+    pattern: /\b(senang|bahagia|lega|gembira|puas)\b/i,
+    reply: () =>
+      choose([
+        "Ikut senang dengarnya! Apa yang membuatmu merasa begitu?",
+        "Bahagia itu berharga. Apa yang paling kamu syukuri saat ini?",
+        "Wah, itu kabar baik! Apa yang ingin kamu rayakan dari perasaan ini?",
+      ]),
+  },
+  {
+    pattern: /\b(kenapa|mengapa) (.+)/i,
+    reply: (m) =>
+      `Pertanyaan bagus. Menurutmu sendiri, kenapa ${reflect(m[2])}?`,
   },
   {
     pattern: /(.+)/i,
     reply: (m) =>
       choose([
-        `When you say "${reflect(m[1])}", what stands out the most to you?`,
-        `What do you hope will change about "${reflect(m[1])}"?`,
-        `If a close friend felt this about "${reflect(
+        `Saat kamu bilang "${reflect(m[1])}", apa maksud terdalammu?`,
+        `Kalau seorang temanmu mengalami "${reflect(
           m[1]
-        )}", what would you say to them?`,
+        )}", apa yang akan kamu katakan kepadanya?`,
+        `Apa yang kamu harapkan berubah dari "${reflect(m[1])}"?`,
       ]),
   },
 ];
 
-export function respond(input, ctx = {}) {
+function respond(input, ctx = {}) {
   if (!input || !input.trim()) {
-    return "I'm here whenever you're ready to share.";
+    return "Aku ada di sini kapan pun kamu siap untuk berbagi.";
   }
   for (const rule of RULES) {
     const m = input.match(rule.pattern);
@@ -158,4 +165,4 @@ export function respond(input, ctx = {}) {
   return choose(FALLBACKS);
 }
 
-export { reflect, RULES };
+module.exports = { respond, reflect, RULES };
